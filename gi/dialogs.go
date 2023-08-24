@@ -59,14 +59,30 @@ var StdDialogVSpaceUnits = units.Value{Val: StdDialogVSpace, Un: units.Ex, Dots:
 // be rendered in a separate window or on top of an existing one.
 type Dialog struct {
 	Viewport2D
-	Title     string      `desc:"title text displayed as the window title for the dialog"`
-	Prompt    string      `desc:"a prompt string displayed below the title"`
-	Modal     bool        `desc:"open the dialog in a modal state, blocking all other input"`
-	DefSize   image.Point `desc:"default size -- if non-zero, then this is used instead of doing an initial size computation -- can save a lot of time for complex dialogs -- sizes are remembered and used after first use anyway"`
-	State     DialogState `desc:"state of the dialog"`
-	SigVal    int64       `desc:"signal value that will be sent, if >= 0 (by default, DialogAccepted or DialogCanceled will be sent for standard Ok / Cancel buttons)"`
-	DialogSig ki.Signal   `json:"-" xml:"-" view:"-" desc:"signal for dialog -- sends a signal when opened, accepted, or canceled"`
-	Data      any         `json:"-" xml:"-" view:"-" desc:"the main data element represented by this window -- used for Recycle* methods for windows that represent a given data element -- prevents redundant windows"`
+
+	// title text displayed as the window title for the dialog
+	Title string `desc:"title text displayed as the window title for the dialog"`
+
+	// a prompt string displayed below the title
+	Prompt string `desc:"a prompt string displayed below the title"`
+
+	// open the dialog in a modal state, blocking all other input
+	Modal bool `desc:"open the dialog in a modal state, blocking all other input"`
+
+	// default size -- if non-zero, then this is used instead of doing an initial size computation -- can save a lot of time for complex dialogs -- sizes are remembered and used after first use anyway
+	DefSize image.Point `desc:"default size -- if non-zero, then this is used instead of doing an initial size computation -- can save a lot of time for complex dialogs -- sizes are remembered and used after first use anyway"`
+
+	// state of the dialog
+	State DialogState `desc:"state of the dialog"`
+
+	// signal value that will be sent, if >= 0 (by default, DialogAccepted or DialogCanceled will be sent for standard Ok / Cancel buttons)
+	SigVal int64 `desc:"signal value that will be sent, if >= 0 (by default, DialogAccepted or DialogCanceled will be sent for standard Ok / Cancel buttons)"`
+
+	// [view: -] signal for dialog -- sends a signal when opened, accepted, or canceled
+	DialogSig ki.Signal `json:"-" xml:"-" view:"-" desc:"signal for dialog -- sends a signal when opened, accepted, or canceled"`
+
+	// [view: -] the main data element represented by this window -- used for Recycle* methods for windows that represent a given data element -- prevents redundant windows
+	Data any `json:"-" xml:"-" view:"-" desc:"the main data element represented by this window -- used for Recycle* methods for windows that represent a given data element -- prevents redundant windows"`
 }
 
 var KiT_Dialog = kit.Types.AddType(&Dialog{}, DialogProps)
@@ -129,12 +145,19 @@ func (dlg *Dialog) Open(x, y int, avp *Viewport2D, cfgFunc func()) bool {
 	}
 
 	vpsz := dlg.DefSize
+	scrn := win.OSWin.Screen()
 	if dlg.DefSize == image.ZP {
-		vpsz = dlg.PrefSize(win.OSWin.Screen().PixSize)
+		vpsz = dlg.PrefSize(scrn.PixSize)
 		if !DialogsSepWindow {
 			vpsz = dlg.LayState.Size.Pref.Min(win.Viewport.LayState.Alloc.Size.MulScalar(.9)).ToPoint()
 		}
 	}
+	pos := dlg.Win.OSWin.Position()
+	vpsz, pos = scrn.ConstrainWinGeom(vpsz, pos)
+	if WinEventTrace {
+		fmt.Printf("Dialog: %s: size = %v\n", dlg.Title, vpsz)
+	}
+
 	dlg.Win = nil
 
 	// note: LowPri allows all other events to be processed before dialog
@@ -177,7 +200,6 @@ func (dlg *Dialog) Open(x, y int, avp *Viewport2D, cfgFunc func()) bool {
 	if DialogsSepWindow {
 		dlg.UpdateEndNoSig(updt)
 		if !win.HasGeomPrefs() {
-			// fmt.Printf("setsz: %v\n", vpsz)
 			win.SetSize(vpsz)
 		}
 		win.GoStartEventLoop()
@@ -441,9 +463,15 @@ func (dlg *Dialog) StdDialog(title, prompt string, ok, cancel bool) {
 // DlgOpts are the basic dialog options accepted by all dialog methods --
 // provides a named, optional way to specify these args
 type DlgOpts struct {
-	Title  string   `desc:"generally should be provided -- will also be used for setting name of dialog and associated window"`
-	Prompt string   `desc:"optional more detailed description of what is being requested and how it will be used -- is word-wrapped and can contain full html formatting etc."`
-	CSS    ki.Props `desc:"optional style properties applied to dialog -- can be used to customize any aspect of existing dialogs"`
+
+	// generally should be provided -- will also be used for setting name of dialog and associated window
+	Title string `desc:"generally should be provided -- will also be used for setting name of dialog and associated window"`
+
+	// optional more detailed description of what is being requested and how it will be used -- is word-wrapped and can contain full html formatting etc.
+	Prompt string `desc:"optional more detailed description of what is being requested and how it will be used -- is word-wrapped and can contain full html formatting etc."`
+
+	// optional style properties applied to dialog -- can be used to customize any aspect of existing dialogs
+	CSS ki.Props `desc:"optional style properties applied to dialog -- can be used to customize any aspect of existing dialogs"`
 }
 
 // NewStdDialog returns a basic standard dialog with given options (title,

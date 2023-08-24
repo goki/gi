@@ -10,6 +10,7 @@
 package oswin
 
 import (
+	"fmt"
 	"image"
 	"unicode/utf8"
 
@@ -407,6 +408,8 @@ func sanitizeUTF8(s string, n int) string {
 	return s[:i]
 }
 
+var DebugWindowFixup = false
+
 // Fixup fills in defaults and updates everything based on current screen and
 // window context Specific hardware can fine-tune this as well, in driver code
 func (o *NewWindowOptions) Fixup() {
@@ -421,10 +424,19 @@ func (o *NewWindowOptions) Fixup() {
 		o.StdPixels = false
 		o.Size.Y = int(0.8 * float32(scsz.Y) * sc.DevicePixelRatio)
 	}
+	if DebugWindowFixup {
+		fmt.Printf("DeubgWindowFixup: starting size: %v\n", o.Size)
+	}
 
 	o.Size, o.Pos = sc.ConstrainWinGeom(o.Size, o.Pos)
+	if DebugWindowFixup {
+		fmt.Printf("DeubgWindowFixup: after ConstrainWinGeom, size: %v  pos: %v\n", o.Size, o.Pos)
+	}
 	if o.Pos.X == 0 && o.Pos.Y == 0 {
 		wsz := sc.WinSizeFmPix(o.Size)
+		if DebugWindowFixup {
+			fmt.Printf("DeubgWindowFixup: pos = 0, wsz: %v\n", wsz)
+		}
 		dialog, modal, _, _ := WindowFlagsToBool(o.Flags)
 		nw := TheApp.NWindows()
 		if nw > 0 {
@@ -447,6 +459,12 @@ func (o *NewWindowOptions) Fixup() {
 			o.Pos.X = scsz.X/2 - wsz.X/2
 			o.Pos.Y = scsz.Y/2 - wsz.Y/2
 		}
+		if DebugWindowFixup {
+			fmt.Printf("DeubgWindowFixup: pos = 0, computed pos: %v\n", o.Pos)
+		}
 		o.Size, o.Pos = sc.ConstrainWinGeom(o.Size, o.Pos) // make sure ok
+		if DebugWindowFixup {
+			fmt.Printf("DeubgWindowFixup: after ConstrainWinGeom again, size: %v  pos: %v\n", o.Size, o.Pos)
+		}
 	}
 }
