@@ -94,14 +94,19 @@ func (app *appImpl) PrefsDir() string {
 
 // this is the main call to create the main menu if not exist
 func (w *windowImpl) MainMenu() oswin.MainMenu {
-	if w.mainMenu == nil {
-		mm := &mainMenuImpl{win: w}
-		w.mainMenu = mm
-		vid := uintptr(mm.win.glw.GetCocoaWindow())
-		mm.delID = uintptr(C.doNewMainMenu(C.uintptr_t(vid)))
-		mm.menID = uintptr(C.mainMenuFromDelegate(C.uintptr_t(mm.delID)))
-	}
-	return w.mainMenu.(*mainMenuImpl)
+	return nil
+	/*
+		theApp.RunOnMain(func() {
+			if w.mainMenu == nil {
+				mm := &mainMenuImpl{win: w}
+				w.mainMenu = mm
+				vid := uintptr(mm.win.glw.GetCocoaWindow())
+				mm.delID = uintptr(C.doNewMainMenu(C.uintptr_t(vid)))
+				mm.menID = uintptr(C.mainMenuFromDelegate(C.uintptr_t(mm.delID)))
+			}
+		})
+		return w.mainMenu.(*mainMenuImpl)
+	*/
 }
 
 func (w *windowImpl) OSHandle() uintptr {
@@ -329,7 +334,9 @@ func (mm *mainMenuImpl) Menu() oswin.Menu {
 func (mm *mainMenuImpl) SetMenu() {
 	mm.mu.Lock()
 	vid := uintptr(mm.win.glw.GetCocoaWindow())
-	C.doSetMainMenu(C.uintptr_t(vid), C.uintptr_t(mm.menID))
+	theApp.RunOnMain(func() {
+		C.doSetMainMenu(C.uintptr_t(vid), C.uintptr_t(mm.menID))
+	})
 	mm.mu.Unlock()
 }
 
@@ -344,14 +351,19 @@ func (mm *mainMenuImpl) EndUpdate(men oswin.Menu) {
 
 // Reset must be called within StartUpdate window
 func (mm *mainMenuImpl) Reset(men oswin.Menu) {
-	C.doMenuReset(C.uintptr_t(men))
+	theApp.RunOnMain(func() {
+		C.doMenuReset(C.uintptr_t(men))
+	})
 }
 
 func (mm *mainMenuImpl) AddSubMenu(men oswin.Menu, titles string) oswin.Menu {
 	title := C.CString(titles)
 	defer C.free(unsafe.Pointer(title))
 
-	subid := C.doAddSubMenu(C.uintptr_t(men), title)
+	var subid uintptr
+	theApp.RunOnMain(func() {
+		subid = uintptr(C.doAddSubMenu(C.uintptr_t(men), title))
+	})
 	return oswin.Menu(subid)
 }
 
@@ -380,28 +392,41 @@ func (mm *mainMenuImpl) AddItem(men oswin.Menu, titles string, shortcut string, 
 	defer C.free(unsafe.Pointer(scs))
 
 	vid := uintptr(mm.win.glw.GetCocoaWindow())
-	mid := C.doAddMenuItem(C.uintptr_t(vid), C.uintptr_t(men), C.uintptr_t(mm.delID), title, scs, C.bool(scShift), C.bool(scCommand), C.bool(scAlt), C.bool(scControl), C.int(tag), C.bool(active))
+	var mid uintptr
+	theApp.RunOnMain(func() {
+		mid = uintptr(C.doAddMenuItem(C.uintptr_t(vid), C.uintptr_t(men), C.uintptr_t(mm.delID), title, scs, C.bool(scShift), C.bool(scCommand), C.bool(scAlt), C.bool(scControl), C.int(tag), C.bool(active)))
+	})
 	return oswin.MenuItem(mid)
 }
 
 func (mm *mainMenuImpl) AddSeparator(men oswin.Menu) {
-	C.doAddSeparator(C.uintptr_t(men))
+	theApp.RunOnMain(func() {
+		C.doAddSeparator(C.uintptr_t(men))
+	})
 }
 
 func (mm *mainMenuImpl) ItemByTitle(men oswin.Menu, titles string) oswin.MenuItem {
 	title := C.CString(titles)
 	defer C.free(unsafe.Pointer(title))
-	mid := C.doMenuItemByTitle(C.uintptr_t(men), title)
+	var mid uintptr
+	theApp.RunOnMain(func() {
+		mid = uintptr(C.doMenuItemByTitle(C.uintptr_t(men), title))
+	})
 	return oswin.MenuItem(mid)
 }
 
 func (mm *mainMenuImpl) ItemByTag(men oswin.Menu, tag int) oswin.MenuItem {
-	mid := C.doMenuItemByTag(C.uintptr_t(men), C.int(tag))
+	var mid uintptr
+	theApp.RunOnMain(func() {
+		mid = uintptr(C.doMenuItemByTag(C.uintptr_t(men), C.int(tag)))
+	})
 	return oswin.MenuItem(mid)
 }
 
 func (mm *mainMenuImpl) SetItemActive(mitm oswin.MenuItem, active bool) {
-	C.doSetMenuItemActive(C.uintptr_t(mitm), C.bool(active))
+	theApp.RunOnMain(func() {
+		C.doSetMenuItemActive(C.uintptr_t(mitm), C.bool(active))
+	})
 }
 
 //export menuFired
