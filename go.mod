@@ -24,7 +24,7 @@ require (
 	github.com/goki/prof v1.0.0
 	github.com/goki/vci v1.0.1
 	github.com/goki/vgpu v1.0.33
-	github.com/goki/vulkan v1.0.6
+	github.com/goki/vulkan v1.0.7
 	github.com/iancoleman/strcase v0.2.0
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/srwiley/rasterx v0.0.0-20220730225603-2ab79fcdd4ef
