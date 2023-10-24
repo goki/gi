@@ -21,7 +21,7 @@ import (
 )
 
 // SliderMinThumbSize is the minimum thumb size, even if computed value would make it smaller
-var SliderMinThumbSize = float32(8)
+var SliderMinThumbSize = float32(16)
 
 // SliderPositioner is a minor interface for functions related to
 // computing slider positions.  Needed for more complex sliders
