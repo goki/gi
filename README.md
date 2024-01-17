@@ -12,7 +12,7 @@
     <a href="https://github.com/goki/gi/releases/"><img src="https://img.shields.io/github/release/goki/gi?include_prereleases=&sort=semver&color=blue" alt="GitHub release"></a>
 </p>
 
-**NOTE:** Goki is currently undergoing a period of significant development to make it easier to make powerful, fast, and beautiful apps and support running apps on mobile. As such, some of the information in this repository and on the [Goki website](https://Goki.dev) may be incorrect. Furthermore, there will be breaking changes soon, so starting new apps with this framework is not recommended at this time; if you do, please be ready to adjust to any breaking changes. If you want to accelerate the improvement of Goki, please contribute by following the [Contribution Guidelines](https://goki.dev/docs/general/contributionguidelines/). Development of Gi is currently happening on this branch. For the latest stable version of Gi, import version 1.3.19 and see the [v1 branch](https://github.com/goki/gi/tree/v1).
+> **IMPORTANT:** Development of Goki has moved to [Cogent Core](https://github.com/cogentcore). For the latest stable version of gi v1, import version 1.3.25 and see the [v1 branch](https://github.com/goki/gi/tree/v1).
 
 GoGi is part of the [Goki](https://Goki.dev) Go language (golang) full strength tree structure system (ki = 木 = tree in Japanese)
 
