@@ -12,8 +12,8 @@
     <a href="https://github.com/goki/gi/releases/"><img src="https://img.shields.io/github/release/goki/gi?include_prereleases=&sort=semver&color=blue" alt="GitHub release"></a>
 </p>
 
-**NOTE:** GoKi is currently undergoing a period of significant developement to make it easier to make useful, fast, and beautiful apps and support running apps on mobile. As such, some of the information in this repository and on the [GoKi website](https://GoKi.dev) may be incorrect. Furthermore, there may be breaking changes soon, so starting new apps with this framework is not recommended at this time; if you do, please be ready to adjust to any breaking changes. If you want to accelerate the improvement of GoKi, please contribute by following the [Contribution Guidelines](https://goki.dev/docs/general/contributionguidelines/). Developement of Gi is currently happening on the [master branch](https://github.com/goki/gi/tree/master). This branch (the v1 branch) is a maintenance branch for the version of Gi without the new improvements. There will not be developement on this branch except for urgent bug fixes, so please contribute any new features to the master branch. 
- 
+This is v1 of the GoKi system, which is maintained here for existing dependencies, but new development is taking place in: https://github.com/cogentcore
+
 GoGi is part of the [GoKi](https://GoKi.dev) Go language (golang) full strength tree structure system (ki = 木 = tree in Japanese)
 
 `package gi` is a scenegraph-based 2D and 3D GUI / graphics interface (Gi) in Go, that functions similar to HTML / CSS / SVG  and Qt.
