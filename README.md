@@ -12,7 +12,7 @@
     <a href="https://github.com/goki/gi/releases/"><img src="https://img.shields.io/github/release/goki/gi?include_prereleases=&sort=semver&color=blue" alt="GitHub release"></a>
 </p>
 
-> **IMPORTANT:** Development of Goki has moved to [Cogent Core](https://github.com/cogentcore). For the latest stable version of gi v1, import version 1.3.25 and see the [v1 branch](https://github.com/goki/gi/tree/v1).
+> **IMPORTANT:** Development of Goki has moved to [Cogent Core](https://github.com/cogentcore). This repository has the v1 version of gi.
 
 GoGi is part of the [Goki](https://Goki.dev) Go language (golang) full strength tree structure system (ki = 木 = tree in Japanese)
 
